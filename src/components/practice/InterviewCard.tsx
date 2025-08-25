@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "../ui/button";
 import { Clock, Star, Users } from "lucide-react";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Interview, InterviewCardPracticeProps } from "@/types/types";
+import Link from "next/link";
 
 const InterviewCard = ({ interview }: InterviewCardPracticeProps) => {
   const getDifficultyVariant = (difficulty: Interview["difficulty"]) => {
@@ -81,9 +81,9 @@ const InterviewCard = ({ interview }: InterviewCardPracticeProps) => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg" variant="prepsmash_button">
+          <Link href={`/playground/${interview?._id}`} className="w-full">
             Start Interview
-          </Button>
+          </Link>
         </CardFooter>
       </Card>
     </>
