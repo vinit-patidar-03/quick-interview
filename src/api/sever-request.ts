@@ -7,6 +7,7 @@ export const apiRequestSSR = async (
   method: string,
   cookies: string
 ) => {
+  url = `${process.env.INTERVIEW_URL}${url}`
   try {
     const response = await axios({
       url,
@@ -24,7 +25,7 @@ export const apiRequestSSR = async (
     if (axiosError.response?.status === 401) {
       try {
         const refreshResponse = await axios.get(
-          `${process.env.INTERVIEW_URL}/api/auth/refresh`,
+          `/api/auth/refresh`,
           {
             headers: {
               "Content-Type": "application/json",

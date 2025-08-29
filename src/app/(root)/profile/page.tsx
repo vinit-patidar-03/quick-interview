@@ -8,7 +8,7 @@ import React from 'react';
 const getOwneredInterviews = async () => {
   try {
     const cookies = await getCookies();
-    const response = await apiRequestSSR(`${process.env.INTERVIEW_URL}/api/interviews/me/owned`, "GET", cookies);
+    const response = await apiRequestSSR(`/api/interviews/me/owned`, "GET", cookies);
     return response?.data || [];
   } catch (error) {
     console.error('Error fetching owned interviews:', error);
@@ -19,7 +19,7 @@ const getOwneredInterviews = async () => {
 const getCompletedInterviews = async () => {
   try {
     const cookies = await getCookies();
-    const response = await apiRequestSSR(`${process.env.INTERVIEW_URL}/api/interviews/me/given`, "GET", cookies);
+    const response = await apiRequestSSR(`/api/interviews/me/given`, "GET", cookies);
     return response?.data || [];
   } catch (error) {
     console.error('Error fetching completed interviews:', error);
