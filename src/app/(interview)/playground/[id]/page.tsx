@@ -3,7 +3,7 @@ import InterviewAgent from '@/components/playground/InterviewAgent';
 import { getCookies } from '@/lib/session';
 import { getUser } from '@/utils/auth';
 
-interface InterviewPageProps {
+interface PageProps {
     params: {
         id: string;
     };
@@ -20,7 +20,7 @@ const getInterviewData = async (id: string) => {
     }
 }
 
-const InterviewPlayground = async ({ params }: InterviewPageProps) => {
+const InterviewPlayground = async ({ params }: PageProps) => {
     const { id } = await params;
     const user = await getUser();
 
