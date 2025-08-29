@@ -7,7 +7,7 @@ import { getCookies } from "@/lib/session";
 async function getInterviews(): Promise<Interview[]> {
   try {
     const cookies = await getCookies();
-    const interviews = await apiRequestSSR("http://localhost:3000/api/interviews", "GET", cookies);
+    const interviews = await apiRequestSSR(`${process.env.INTERVIEW_URL}/api/interviews`, "GET", cookies);
     return interviews?.data as Interview[];
   } catch (error) {
     console.error("Error fetching interviews:", error);

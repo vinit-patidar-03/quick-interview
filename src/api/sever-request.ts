@@ -24,7 +24,7 @@ export const apiRequestSSR = async (
     if (axiosError.response?.status === 401) {
       try {
         const refreshResponse = await axios.get(
-          "http://localhost:3000/api/auth/refresh",
+          `${process.env.INTERVIEW_URL}/api/auth/refresh`,
           {
             headers: {
               "Content-Type": "application/json",

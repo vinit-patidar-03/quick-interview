@@ -57,7 +57,7 @@ interface FeedbackData {
 const getInterviewFeedback = async (id: string): Promise<FeedbackData | null> => {
     try {
         const cookies = await getCookies();
-        const response = await apiRequestSSR(`http://localhost:3000/api/interviews/${id}/feedback`, "GET", cookies);
+        const response = await apiRequestSSR(`${process.env.INTERVIEW_URL}/api/interviews/${id}/feedback`, "GET", cookies);
         return response?.data;
     } catch (error) {
         console.error('Error fetching interview feedback:', error);
