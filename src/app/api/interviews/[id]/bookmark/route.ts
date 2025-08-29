@@ -3,8 +3,12 @@ import { getUserId } from "@/lib/session";
 import { USER_BOOKMARKS } from "@/models";
 import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } =  params;
+export const POST = async (req: NextRequest, {
+    params,
+}: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+    const { id } = await params;
     try {
         const userId = await getUserId("access");
         if (!userId) {
@@ -29,8 +33,12 @@ export const POST = async (req: NextRequest, { params }: { params: { id: string 
     }
 }
 
-export const DELETE = async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } = params;
+export const DELETE = async (req: NextRequest, {
+    params,
+}: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+    const { id } = await params;
     try {
         const userId = await getUserId("access");
         if (!userId) {

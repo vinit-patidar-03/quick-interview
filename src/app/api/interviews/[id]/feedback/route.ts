@@ -7,7 +7,11 @@ import { NextResponse } from "next/server";
 
 export const  GET = async (
   request: Request,
-  { params }: { params: { id: string } }
+   {
+    params,
+  }: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
 ) => {
   try {
     const userId = await getUserId("access");
@@ -15,9 +19,9 @@ export const  GET = async (
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    const interviewId = params.id;
+    const {id} = await params;
 
-    if (!interviewId) {
+    if (!id) {
       return NextResponse.json(
         { error: "interview ID undefined" },
         { status: 404 }
@@ -28,7 +32,7 @@ export const  GET = async (
 
     const interviewFeedback = await UserInterviewFeedback.findOne({
       user: userId,
-      interview: interviewId,
+      interview: id,
     }).populate('interview');
 
     if (!interviewFeedback) {
@@ -53,7 +57,11 @@ export const  GET = async (
 
 export const POST = async (
   request: Request,
-  { params }: { params: { id: string } }
+  {
+    params,
+  }: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
 ) => {
   try {
     const userId = await getUserId("access");
@@ -61,13 +69,13 @@ export const POST = async (
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    const interviewId = params.id;
+    const {id} = await params;
 
     await connectDB();
 
     const interviewProgress = await USER_PROGRESS.findOne({
       user: userId,
-      interview: interviewId,
+      interview: id,
     });
 
     if (!interviewProgress) {
@@ -97,7 +105,7 @@ export const POST = async (
 
     await UserInterviewFeedback.create({
       user: userId,
-      interview: interviewId,
+      interview: id,
       feedback
     });
 

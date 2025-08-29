@@ -3,11 +3,15 @@ import { USER_PROGRESS } from '@/models';
 import { connectDB } from '@/lib/db';
 import { getUserId } from '@/lib/session';
 
-export const POST = async (request: NextRequest, { params }: { params: { id: string } })=> {
+export const POST = async (request: NextRequest,   {
+    params,
+  }: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+  })=> {
     try {
 
         const userId = await getUserId("access");
-        const interviewId = await params.id;
+        const {id} = await params;
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -24,7 +28,7 @@ export const POST = async (request: NextRequest, { params }: { params: { id: str
         } = await request.json();
         
 
-        if (!userId || !interviewId || !sessionId) {
+        if (!userId || !id || !sessionId) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
                 { status: 400 }
@@ -32,7 +36,7 @@ export const POST = async (request: NextRequest, { params }: { params: { id: str
         }
 
         const progress = await USER_PROGRESS.findOneAndUpdate(
-            { user: userId, interview: interviewId },
+            { user: userId, interview: id },
             {
                 transcript: transcript || [],
                 sessionId,
@@ -63,7 +67,11 @@ export const POST = async (request: NextRequest, { params }: { params: { id: str
     }
 }
 
-export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
+export const GET = async (request: NextRequest,   {
+    params,
+  }: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+  }) => {
     try {
         const userId = await getUserId("access");
         if (!userId) {
@@ -72,9 +80,9 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
 
         await connectDB();
  
-        const interviewId = await params.id;
+        const {id} = await params;
 
-        if (!userId || !interviewId) {
+        if (!userId || !id) {
             return NextResponse.json(
                 { error: 'Missing userId or interviewId' },
                 { status: 400 }
@@ -83,7 +91,7 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
 
         const progress = await USER_PROGRESS.findOne({
             user: userId,
-            interview: interviewId,
+            interview: id,
             isCompleted: false
         }).populate('interview');
 
