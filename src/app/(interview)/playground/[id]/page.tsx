@@ -14,23 +14,25 @@ const getInterviewData = async (id: string) => {
     }
 }
 
-const InterviewPlayground = async ({ params }: { params: { id: string } }) => {
+export default async function InterviewPlayground({
+    params,
+}: {
+    params: { id: string };
+}) {
     const { id } = params;
     const user = await getUser();
 
-    const InterviewData = await getInterviewData(id);
+    const interviewData = await getInterviewData(id);
 
-    if (!InterviewData) {
+    if (!interviewData) {
         return <p className="text-red-500">Failed to load interview data.</p>;
     }
 
     return (
-        <>
-            <div className="min-h-screen bg-gray-100">
-                <InterviewAgent interview={InterviewData} user={user!} />
-            </div>
-        </>
-    )
+        <div className="min-h-screen bg-gray-100">
+            <InterviewAgent interview={interviewData} user={user!} />
+        </div>
+    );
 }
 
-export default InterviewPlayground
+
