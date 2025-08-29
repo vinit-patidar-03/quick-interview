@@ -1,4 +1,3 @@
-"use server";
 import { getCookies } from "@/lib/session";
 import axios, { AxiosError } from "axios";
 
@@ -7,6 +6,8 @@ export const apiRequestSSR = async (
   method: string,
   cookies: string
 ) => {
+  console.log("INTERVIEW_URL:", process.env.INTERVIEW_URL);
+
   url = `${process.env.INTERVIEW_URL}${url}`
   try {
     const response = await axios({
@@ -25,7 +26,7 @@ export const apiRequestSSR = async (
     if (axiosError.response?.status === 401) {
       try {
         const refreshResponse = await axios.get(
-          `/api/auth/refresh`,
+          `${process.env.INTERVIEW_URL}/api/auth/refresh`,
           {
             headers: {
               "Content-Type": "application/json",
