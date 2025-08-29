@@ -201,9 +201,13 @@ const CategoryCard = ({ category, data }: { category: string; data: CategoryData
     );
 };
 
-const FeedbackPage = async ({ params }: { params: { id: string } }) => {
-    const { id } = params;
-    const feedbackData = await getInterviewFeedback(id);
+const FeedbackPage = async ({
+    params,
+}: {
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+    const { id } = await params;
+    const feedbackData = await getInterviewFeedback(id as string);
 
     if (!feedbackData) {
         return (

@@ -17,12 +17,12 @@ const getInterviewData = async (id: string) => {
 export default async function InterviewPlayground({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const { id } = params;
+    const { id } = await params;
     const user = await getUser();
 
-    const interviewData = await getInterviewData(id);
+    const interviewData = await getInterviewData(id as string);
 
     if (!interviewData) {
         return <p className="text-red-500">Failed to load interview data.</p>;
