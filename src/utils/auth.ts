@@ -1,4 +1,3 @@
-"use server"
 import { apiRequestSSR } from "@/api/sever-request";
 import { getCookies } from "@/lib/session"
 
