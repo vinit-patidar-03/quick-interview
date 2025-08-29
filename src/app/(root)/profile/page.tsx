@@ -1,4 +1,4 @@
-// UserProfilePage.tsx (Server Component)
+export const dynamic = "force-dynamic";
 import { apiRequestSSR } from '@/api/sever-request';
 import UserProfile from '@/components/profile/UserProfile';
 import { getCookies } from '@/lib/session';

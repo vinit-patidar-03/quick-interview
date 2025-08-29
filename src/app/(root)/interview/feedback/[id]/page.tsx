@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { apiRequestSSR } from '@/api/sever-request';
 import { getCookies } from '@/lib/session';
 import React from 'react';

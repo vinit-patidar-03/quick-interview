@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import { Interview } from "@/types/types";
 import InterviewBrowseClient from "@/components/browse/InterviewBrowseClient";
