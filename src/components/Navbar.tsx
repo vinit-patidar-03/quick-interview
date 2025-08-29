@@ -1,11 +1,14 @@
 "use client";
-import { Menu, Target, User, Users, X, Zap } from "lucide-react";
+import { Menu, Target, Users, X, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-
-const Navbar = () => {
+import { User } from "@/types/types";
+type NavbarProps = {
+  user: User
+}
+const Navbar = ({ user }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -57,9 +60,9 @@ const Navbar = () => {
           <div className="flex justify-end items-center w-full gap-3">
             <Link
               href={`/profile`}
-              className="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-full transition-colors duration-200 border border-gray-200"
+              className="flex items-center justify-center space-x-2 bg-gray-50 hover:bg-gray-100 w-10 h-10 rounded-full transition-colors duration-200 border border-gray-200 font-bold"
             >
-              <User className="w-4 h-4 text-gray-600" />
+              {user?.username[0]?.toUpperCase()}
             </Link>
 
             <Button

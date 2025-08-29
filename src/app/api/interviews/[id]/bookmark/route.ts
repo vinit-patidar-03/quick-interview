@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/db";
 import { getUserId } from "@/lib/session";
-import USER_BOOKMARKS from "@/models/bookmarked";
+import { USER_BOOKMARKS } from "@/models";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest, { params }: { params: { id: string } }) => {

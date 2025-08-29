@@ -1,6 +1,7 @@
 import { generateContent } from "@/lib/gemini";
 import { generateQuestionsPrompt } from "./prompt";
 import { GenerateQuestionsParams, Question } from "../types/types";
+import { cleanJsonResponse } from "@/utils/clean-response";
 
 export const generateQuestions = async (params: GenerateQuestionsParams): Promise<Question[]> => {
   const { company, role, difficulty, technologies, duration, description } = params;
@@ -12,9 +13,7 @@ export const generateQuestions = async (params: GenerateQuestionsParams): Promis
   const prompt = generateQuestionsPrompt(params);
 
   try {
-    const response = await generateContent(prompt);
-    console.log("Raw response from content generation:", response);
-    
+    const response = await generateContent(prompt); 
     const cleanedResponse = cleanJsonResponse(response);
     const questions = parseQuestions(cleanedResponse);
     
@@ -23,15 +22,6 @@ export const generateQuestions = async (params: GenerateQuestionsParams): Promis
     console.error("Error generating questions:", error);
     throw new Error("Failed to generate questions");
   }
-};
-
-const cleanJsonResponse = (response: string): string => {
-  return response
-    .replace(/^\s*```json\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .replace(/^\s*```\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .trim();
 };
 
 const parseQuestions = (jsonString: string): Question[] => {
@@ -68,7 +58,6 @@ export const generateQuestionsWithRetry = async (
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`Generating questions (attempt ${attempt}/${maxRetries})`);
       const questions = await generateQuestions(params);
       
       if (questions.length > 0) {

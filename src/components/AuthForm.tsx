@@ -10,7 +10,7 @@ import FormFieldWithLabel from "./FormFieldWithLabel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { apiRequest } from "../api/request";
+import { apiRequest } from "../api/client-request";
 import ButtonWithLoading from "./ButtonWithLoading";
 
 const getAuthSchema = (type: string) => {

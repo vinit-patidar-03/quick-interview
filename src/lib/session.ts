@@ -69,13 +69,13 @@ export const getUserId = async (key: string) => {
 
     const isAccess = key == 'access';
     const token = isAccess ? await getAccessToken() : await getRefreshToken();
-    console.log(`${key} token:`, token);
+
     if (!token) {
         return null;
     }
 
     const decoded = isAccess ? decodeAccessToken(token)! : decodeRefreshToken(token);
-    console.log(`${key} token decoded:`, decoded);
+
     if (!decoded) {
         return null;
     }

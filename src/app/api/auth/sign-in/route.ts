@@ -1,4 +1,4 @@
-import USER from "@/models/user";
+import {USER} from "@/models";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { connectDB } from "@/lib/db";
@@ -11,7 +11,7 @@ export const POST = async (req: NextRequest) => {
         const { email, password } = await req.json();
 
         if (!email || !password) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+            return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
         }
 
         await connectDB();
@@ -19,13 +19,13 @@ export const POST = async (req: NextRequest) => {
         const user = await USER.findOne({ email });
 
         if (!user) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
+            return NextResponse.json({success: false, message: "User not found" }, { status: 404 });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+            return NextResponse.json({ success: false, message: "Invalid password" }, { status: 401 });
         }
 
         const accessToken = generateAccessToken(user._id);
@@ -38,6 +38,6 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error) {
         console.error("Error logging in user:", error);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
     }
 }

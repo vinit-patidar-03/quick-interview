@@ -31,18 +31,19 @@ import {
   Briefcase,
   MessageSquare,
   TrendingUp,
-  Settings,
   Trash2,
   ImageIcon,
   ArrowRight,
   ArrowLeft,
+  Settings,
 } from "lucide-react";
 import AiGenerateButton from "@/components/AiGenerateButton";
 import SkillsBadge from "@/components/SkillsBadge";
 import ButtonWithLoading from "@/components/ButtonWithLoading";
 import ButtonWithIcon from "@/components/ButtonWithIcon";
-import { apiRequest, apiRequestWithFile } from "@/api/request";
+import { apiRequest, apiRequestWithFile } from "@/api/client-request";
 import { toast } from "sonner";
+import { roles } from "@/constants/constants";
 
 interface Question {
   question: string;
@@ -75,31 +76,29 @@ const DIFFICULTY_OPTIONS = [
   {
     value: "Beginner",
     label: "Beginner",
-    color: "bg-green-100 text-green-800",
+    color: "bg-green-500 text-green-800",
   },
   {
     value: "Intermediate",
     label: "Intermediate",
-    color: "bg-blue-100 text-blue-800",
+    color: "bg-orange-500 text-blue-800",
   },
   {
     value: "Advanced",
     label: "Advanced",
-    color: "bg-orange-100 text-orange-800",
+    color: "bg-red-300 text-orange-800",
   },
-  { value: "Expert", label: "Expert", color: "bg-red-100 text-red-800" },
+  { value: "Expert", label: "Expert", color: "bg-red-500 text-red-800" },
 ];
 
 const QUESTION_TYPES = [
-  { value: "Technical", icon: Code, color: "bg-purple-100 text-purple-800" },
-  { value: "Behavioral", icon: Users, color: "bg-blue-100 text-blue-800" },
+  { value: "conceptual", icon: Code, color: "bg-purple-100 text-purple-800" },
+  { value: "scenario", icon: Settings, color: "bg-blue-100 text-blue-800" },
   {
-    value: "System Design",
-    icon: Settings,
+    value: "behavioral",
+    icon: Users,
     color: "bg-orange-100 text-orange-800",
-  },
-  { value: "Coding", icon: FileText, color: "bg-green-100 text-green-800" },
-  { value: "General", icon: MessageSquare, color: "bg-gray-100 text-gray-800" },
+  }
 ];
 
 const InterviewForm = () => {
@@ -331,7 +330,7 @@ const InterviewForm = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-6 space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label
                     htmlFor="company"
@@ -359,13 +358,53 @@ const InterviewForm = () => {
                     <Briefcase className="w-4 h-4" />
                     Role *
                   </Label>
-                  <Input
-                    id="role"
-                    placeholder="Enter role title"
+                  <Select
                     value={formData.role}
-                    onChange={(e) => handleInputChange("role", e.target.value)}
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                  />
+                    onValueChange={(value) => handleInputChange("role", value)}
+                  >
+                    <SelectTrigger
+                      id="role"
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full"
+                    >
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Difficulty Level *
+                  </Label>
+                  <Select
+                    value={formData.difficulty}
+                    onValueChange={(value) =>
+                      handleInputChange("difficulty", value)
+                    }
+                  >
+                    <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full">
+                      <SelectValue placeholder="Select difficulty" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DIFFICULTY_OPTIONS.map((level) => (
+                        <SelectItem key={level.value} value={level.value}>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${level.color.split(" ")[0]
+                                }`}
+                            ></div>
+                            {level.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -448,36 +487,6 @@ const InterviewForm = () => {
                     className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Difficulty Level *
-                </Label>
-                <Select
-                  value={formData.difficulty}
-                  onValueChange={(value) =>
-                    handleInputChange("difficulty", value)
-                  }
-                >
-                  <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <SelectValue placeholder="Select difficulty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIFFICULTY_OPTIONS.map((level) => (
-                      <SelectItem key={level.value} value={level.value}>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-2 h-2 rounded-full ${level.color.split(" ")[0]
-                              }`}
-                          ></div>
-                          {level.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               <div className="space-y-3">

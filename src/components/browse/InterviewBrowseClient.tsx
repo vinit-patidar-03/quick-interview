@@ -5,7 +5,7 @@ import InterviewHeader from "./InterviewHeader";
 import InterviewGrid from "./InterviewGrid";
 import EmptyState from "./EmptyState";
 import SearchAndTabs from "./SearchAndTabs";
-import { apiRequest } from "@/api/request";
+import { apiRequest } from "@/api/client-request";
 
 interface InterviewBrowseClientProps {
     initialInterviews: Interview[];
@@ -13,12 +13,10 @@ interface InterviewBrowseClientProps {
 
 const InterviewBrowseClient = ({ initialInterviews }: InterviewBrowseClientProps) => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortBy, setSortBy] = useState("popular");
+    const [sortBy, setSortBy] = useState("");
     const [activeTab, setActiveTab] = useState("all");
 
     const handleBookmarkToggle = async (id: string) => {
-        console.log("Toggling bookmark for interview ID:", id);
-
         try {
             if (!id) return;
             const interviewIndex = initialInterviews.findIndex((interview) => interview._id === id);
@@ -26,13 +24,11 @@ const InterviewBrowseClient = ({ initialInterviews }: InterviewBrowseClientProps
             const isBookmarked = initialInterviews[interviewIndex].isBookmarked || false;
             if (isBookmarked) {
                 initialInterviews[interviewIndex].isBookmarked = false;
-                const response = await apiRequest(`/api/interviews/${id}/bookmark`, "DELETE");
-                console.log("Bookmark removed:", response);
+                await apiRequest(`/api/interviews/${id}/bookmark`, "DELETE");
 
             } else {
                 initialInterviews[interviewIndex].isBookmarked = true;
-                const response = await apiRequest(`/api/interviews/${id}/bookmark`, "POST");
-                console.log("Bookmark added:", response);
+                await apiRequest(`/api/interviews/${id}/bookmark`, "POST");
             }
         } catch (error) {
             console.error("Error toggling bookmark:", error);
@@ -49,25 +45,22 @@ const InterviewBrowseClient = ({ initialInterviews }: InterviewBrowseClientProps
 
         const matchesTab =
             activeTab === "all" ||
-            (activeTab === "trending" && interview.trending) ||
-            (activeTab === "recent" && interview.recentlyAdded) ||
-            (activeTab === "top-rated" && interview.rating >= 4.5) ||
-            (activeTab === "most-attempted" && interview.attempts >= 1000) ||
-            (activeTab === "challenging" && interview.difficulty === "Expert");
+            (activeTab === "expert" && interview.difficulty === "Expert") ||
+            (activeTab === "bookmarked" && interview.isBookmarked) ||
+            (activeTab === "advanced" && interview.difficulty === "Advanced") ||
+            (activeTab === "intermidate" && interview.difficulty === "Intermediate") ||
+            (activeTab === "beginner" && interview.difficulty === "Beginner");
 
         return matchesSearch && matchesTab;
     }) || [];
 
     const sortedInterviews = [...filteredInterviews].sort((a, b) => {
         switch (sortBy) {
-            case "popular":
-                return b.attempts - a.attempts;
-            case "rating":
-                return b.rating - a.rating;
-            case "recent":
-                return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
             case "duration":
                 return (a.duration || 0) - (b.duration || 0);
+            case "difficulty":
+                const difficultyOrder = { "Beginner": 1, "Intermediate": 2, "Advanced": 3, "Expert": 4 };
+                return (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0);
             default:
                 return 0;
         }

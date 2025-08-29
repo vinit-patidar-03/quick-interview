@@ -4,6 +4,12 @@ export type ChildProp = {
   children: React.ReactNode;
 }
 
+export type User = {
+    _id: string;
+    username: string;
+    email: string;
+}
+
 export type AuthFormType = "sign-in" | "sign-up";
 
 export type AuthFormProps = {
@@ -36,20 +42,21 @@ export interface Interview {
   difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
   duration: number;
   questions: Question[];
-  rating: number;
-  attempts: number;
   description: string;
   companyLogo: string;
-  trending: boolean;
-  recentlyAdded: boolean;
   createdAt?: Date;
   isBookmarked?: boolean;
+  isCompleted?: boolean;
+  isStarted?: boolean;
+  isFeedback?:boolean
 }
 
 export interface PracticeInterviews{
   interview: Interview;
   createdAt: Date;
   updatedAt: Date;
+  isStarted: boolean;
+  isCompleted: boolean;
   _id: string;
   user: string;
 }
@@ -62,6 +69,8 @@ export interface InterviewCardBrowseProps {
 
 export interface InterviewCardPracticeProps {
   interview: Interview;
+  isCompleted: boolean;
+  isStarted: boolean
 }
 
 export interface FilterOption {

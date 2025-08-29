@@ -1,10 +1,10 @@
 import { connectDB } from "@/lib/db";
 import { getUserId } from "@/lib/session";
-import INTERVIEW_MODEL from "@/models/interview";
-import { NextRequest, NextResponse } from "next/server";
+import {INTERVIEW_MODEL} from "@/models";
+import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
   try {
     const userId = await getUserId("access");
 

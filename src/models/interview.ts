@@ -1,5 +1,6 @@
 import { Interview } from "@/types/types";
 import mongoose, { models } from "mongoose";
+import USER_BOOKMARKS from "./bookmarked-interviews";
 
 const interviewSchema = new mongoose.Schema<Interview>({
     userId: {
@@ -29,34 +30,11 @@ const interviewSchema = new mongoose.Schema<Interview>({
     },
     questions: {
         type: [{
-            question: {
-                type: String,
-                required: true,
-            },
-            type: {
-                type: String,
-            },
-            followups: {
-                type: [String], 
-                required: false,
-                default: [],
-            },
-            hints: {
-                type: [String], 
-                required: false,
-                default: [],
-            }
+            question: { type: String, required: true },
+            type: { type: String },
+            followups: { type: [String], default: [] },
+            hints: { type: [String], default: [] }
         }],
-        required: false,
-    },
-    rating: {
-        type: Number,
-        default: 0,
-        required: false,
-    },
-    attempts: {
-        type: Number,
-        default: 0,
         required: false,
     },
     description: {
@@ -66,19 +44,16 @@ const interviewSchema = new mongoose.Schema<Interview>({
     companyLogo: {
         type: String,
         required: false,
-    },
-    trending: {
-        type: Boolean,
-        required: false,
-    },
-    recentlyAdded: {
-        type: Boolean,
-        required: false,
-    },
+    }
 }, {
     timestamps: true,
 });
 
-const INTERVIEW_MODEL = models.Interview || mongoose.model("Interview", interviewSchema);
+interviewSchema.pre("deleteOne", { document: true, query: false }, async function(next) {
+    await USER_BOOKMARKS.deleteMany({ interview: this._id });
+    next();
+});
+
+const INTERVIEW_MODEL = models?.Interview || mongoose.model("Interview", interviewSchema);
 
 export default INTERVIEW_MODEL;

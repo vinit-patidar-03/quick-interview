@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building2, Clock, Star, User } from "lucide-react";
+import { BookmarkCheck, BookmarkPlus, Building2, Clock } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import Link from "next/link";
 
 const InterViewBrowseCard = ({
   interview,
@@ -36,7 +35,6 @@ const InterViewBrowseCard = ({
 
   const handleBookmarkClick = (id: string) => {
     setIsBookmarkedState(!isBookmarkedState);
-    console.log("Bookmark toggled for interview ID:", id);
     onBookmarkToggle(id);
   }
 
@@ -67,12 +65,15 @@ const InterViewBrowseCard = ({
             variant="ghost"
             size="sm"
             onClick={() => handleBookmarkClick(interview._id)}
-            className="text-muted-foreground hover:text-yellow-500"
+            className="text-muted-foreground"
           >
-            <Star
-              className={`w-5 h-5 ${isBookmarkedState ? "fill-yellow-500 text-yellow-500" : ""
-                }`}
-            />
+            {
+              isBookmarkedState ? (
+                <BookmarkCheck className="w-10 h-10 text-green-500" />
+              ) : (
+                <BookmarkPlus className="w-10 h-10" />
+              )
+            }
           </Button>
         </div>
       </CardHeader>
@@ -96,22 +97,32 @@ const InterViewBrowseCard = ({
           <Badge className={getDifficultyColor(interview?.difficulty)}>
             {interview?.difficulty}
           </Badge>
-          <div className="flex items-center gap-1" title="Rating">
-            <Star className="w-4 h-4 text-yellow-500" />
-            {interview?.rating?.toFixed(1)}
-          </div>
-          <div className="flex items-center gap-1" title="Total Attempts">
-            <User className="w-4 h-4" />
-            {interview?.attempts?.toLocaleString()}
-          </div>
         </div>
 
-        <Link
-          href={`/playground/${interview._id}`}
-          className="w-full px-3 py-2 text-center bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+        <Button
+          variant={isBookmarkedState ? "secondary" : "outline"}
+          onClick={() => handleBookmarkClick(interview?._id)}
+          className={`w-full px-4 py-2 border-purple-500 transition-colors shadow-sm
+        ${isBookmarkedState
+              ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
+              : "bg-purple-50 text-purple-700 hover:bg-purple-100"
+            }`}
+          aria-pressed={isBookmarkedState}
         >
-          Start Interview
-        </Link>
+          <span className="flex items-center justify-center gap-2">
+            {isBookmarkedState ? (
+              <>
+                <BookmarkCheck className="w-4 h-4 text-green-600" aria-hidden="true" />
+                <span>Remove Bookmark</span>
+              </>
+            ) : (
+              <>
+                <BookmarkPlus className="w-4 h-4 text-purple-600" aria-hidden="true" />
+                <span>Bookmark Interview</span>
+              </>
+            )}
+          </span>
+        </Button>
       </CardFooter>
     </Card>
   );

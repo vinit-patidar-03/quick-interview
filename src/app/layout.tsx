@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import ContextProvider from "@/context/ContextProvider";
 
 const MonaSans = Mona_Sans({
   variable: "--font-mona-sans",
@@ -22,10 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${MonaSans.className} antialiased scrollbar-thin`}>
-        <ContextProvider>
-          {children}
-          <Toaster />
-        </ContextProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   );

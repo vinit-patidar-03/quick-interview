@@ -9,9 +9,7 @@ import {
 } from "@/components/ui/select";
 
 const sortOptions = [
-    { value: "popular", label: "Most Popular" },
-    { value: "rating", label: "Highest Rated" },
-    { value: "recent", label: "Recently Added" },
+    { value: "difficulty", label: "Difficulty" },
     { value: "duration", label: "Duration" },
 ];
 

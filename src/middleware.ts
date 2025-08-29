@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     
     console.log("Middleware check:", { pathname, token, rtoken });
 
-  if (token && urls.includes(pathname)) {
+  if ((token || rtoken) && urls.includes(pathname)) {
     return NextResponse.redirect(new URL("/practice", request.url));
   }
 
@@ -25,8 +25,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/api/interviews/:path*",
-    "/api/auth/me",
-    "/api/auth/refresh",
+    "/api/auth/:path*",
     "/create",
     "/browse",
     "/practice",

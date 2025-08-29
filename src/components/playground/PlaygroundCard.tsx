@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+// import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Bot, MicOff, User, Mic, Volume2 } from 'lucide-react';
 
@@ -9,15 +9,12 @@ type PlaygroundCardProps = {
     role: "user" | "agent";
     details: { username: string; email: string };
     isSpeaking?: boolean;
-    audioLevel?: number;
     isMuted?: boolean;
 }
-
 const PlaygroundCard = ({
     role,
     details,
     isSpeaking = false,
-    audioLevel = 0,
     isMuted = false
 }: PlaygroundCardProps) => {
     const getStatusText = () => {
@@ -54,31 +51,30 @@ const PlaygroundCard = ({
                     {/* Header with Avatar and Info */}
                     <div className="flex items-center gap-4">
                         <div className="relative">
-                            <Avatar className={`h-16 w-16 border-3 transition-all duration-200 ${isActive
-                                ? 'shadow-lg border-white scale-105'
-                                : 'shadow-md border-white/80'
-                                }`}>
-                                <AvatarFallback className={`
-                                    text-white font-semibold text-lg relative overflow-hidden
-                                    ${isAgent
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                        : isMuted
-                                            ? 'bg-gradient-to-br from-red-500 to-red-600'
-                                            : 'bg-gradient-to-br from-green-500 to-green-600'
-                                    }
-                                `}>
-                                    {/* Subtle pattern overlay */}
-                                    <div className="absolute inset-0 bg-white/10 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.3),transparent_50%)]" />
+                            <div className={`
+                                h-16 w-16 rounded-full border-3 transition-all duration-200 flex items-center justify-center
+                                ${isActive
+                                    ? 'shadow-lg border-white scale-105'
+                                    : 'shadow-md border-white/80'
+                                }
+                                ${isAgent
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                    : isMuted
+                                        ? 'bg-gradient-to-br from-red-500 to-red-600'
+                                        : 'bg-gradient-to-br from-green-500 to-green-600'
+                                }
+                            `}>
+                                {/* Subtle pattern overlay */}
+                                <div className="absolute inset-0 bg-white/10 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.3),transparent_50%)] rounded-full" />
 
-                                    {role === 'user' && isMuted ? (
-                                        <MicOff size={20} className="relative z-10" />
-                                    ) : isAgent ? (
-                                        <Bot size={20} className="relative z-10" />
-                                    ) : (
-                                        <User size={20} className="relative z-10" />
-                                    )}
-                                </AvatarFallback>
-                            </Avatar>
+                                {role === 'user' && isMuted ? (
+                                    <MicOff size={20} className="relative z-10 text-white" />
+                                ) : isAgent ? (
+                                    <Bot size={20} className="relative z-10 text-white" />
+                                ) : (
+                                    <User size={20} className="relative z-10 text-white" />
+                                )}
+                            </div>
 
                             {/* Status indicator */}
                             {isActive && (
@@ -132,7 +128,7 @@ const PlaygroundCard = ({
                             {[...Array(16)].map((_, i) => {
                                 const baseHeight = 4 + (i % 3) * 2;
                                 const activeHeight = isActive
-                                    ? Math.max(baseHeight, Math.min(32, (audioLevel || 0) * 0.3 + Math.sin(i * 0.5 + Date.now() * 0.01) * 8 + baseHeight))
+                                    ? Math.max(baseHeight, Math.min(32, Math.sin(i * 0.5 + Date.now() * 0.01) * 8 + baseHeight))
                                     : baseHeight;
 
                                 return (
@@ -148,22 +144,6 @@ const PlaygroundCard = ({
                                     />
                                 );
                             })}
-                        </div>
-
-                        {/* Audio level indicator */}
-                        <div className="flex items-center justify-between mt-3 text-xs">
-                            <span className="text-gray-600 font-medium">
-                                {isActive ? 'Active' : 'Idle'}
-                            </span>
-                            <div className="flex items-center gap-1">
-                                <div className={`w-2 h-2 rounded-full ${isActive
-                                    ? (isAgent ? 'bg-blue-500' : 'bg-green-500') + ' animate-pulse'
-                                    : 'bg-gray-300'
-                                    }`} />
-                                <span className="font-mono text-gray-500">
-                                    {Math.round(audioLevel || 0)}%
-                                </span>
-                            </div>
                         </div>
                     </div>
                 </div>

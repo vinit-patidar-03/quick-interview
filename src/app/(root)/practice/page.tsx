@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Search, Filter, Loader2 } from "lucide-react";
+import { Search, Filter, Loader2, Blend } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,7 +12,16 @@ import {
 import NoInterview from "@/components/NoInterview";
 import InterviewCard from "@/components/practice/InterviewCard";
 import { PracticeInterviews } from "@/types/types";
-import { apiRequest } from "@/api/request";
+import { apiRequest } from "@/api/client-request";
+
+const difficultyConfig = [
+  { id: "all", name: "All Difficulties", emoji: <Blend className="w-4 h-4" /> },
+  { id: "expert", name: "Expert", emoji: <div className="w-3 h-3 rounded-full bg-red-500"></div> },
+  { id: "advanced", name: "Advanced", emoji: <div className="w-3 h-3 rounded-full bg-red-300"></div> },
+  { id: "intermidate", name: "Intermidate", emoji: <div className="w-3 h-3 rounded-full bg-orange-500" ></div> },
+  { id: "beginner", name: "Beginner", emoji: <div className="w-3 h-3 rounded-full bg-green-500" ></div> },
+];
+
 
 const PracticePage = () => {
   const [selectedJobType, setSelectedJobType] = useState<string>("all");
@@ -21,21 +30,30 @@ const PracticePage = () => {
   const [practiceInterviews, setPracticeInterviews] = useState<PracticeInterviews[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [roles, setRoles] = useState<string[]>([])
 
   useEffect(() => {
     fetchPracticeInterviews();
   }, []);
+
+  const getRolesAdded = (interviews: PracticeInterviews[]) => {
+    const roles = new Set<string>();
+    interviews.forEach((practiceInterview: PracticeInterviews) => {
+      roles.add(practiceInterview?.interview.role);
+    });
+    return roles;
+  }
 
   const fetchPracticeInterviews = async () => {
     try {
       setLoading(true);
       setError("");
       const response = await apiRequest('/api/interviews/practice', 'GET');
-      console.log("Fetched practice interviews:", response);
 
       if (response?.success === true) {
         const interviews = response.data || [];
         setPracticeInterviews(interviews);
+        setRoles(['all', ...getRolesAdded(interviews)]);
       }
     } catch (error) {
       console.error("Failed to fetch practice interviews:", error);
@@ -103,20 +121,19 @@ const PracticePage = () => {
                 onValueChange={setSelectedJobType}
                 disabled={loading}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger>
                   <Filter className="w-4 h-4 mr-2" />
                   <SelectValue placeholder="All Job Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Job Types</SelectItem>
-                  <SelectItem value="frontend">Frontend Development</SelectItem>
-                  <SelectItem value="backend">Backend Development</SelectItem>
-                  <SelectItem value="fullstack">
-                    Full Stack Development
-                  </SelectItem>
-                  <SelectItem value="data">Data Science</SelectItem>
-                  <SelectItem value="devops">DevOps</SelectItem>
-                  <SelectItem value="mobile">Mobile Development</SelectItem>
+                  {roles &&
+                    roles?.map((role, index) => {
+                      if (role === 'all') {
+                        return <SelectItem key={index} value={role}>All Job Types</SelectItem>
+                      }
+                      return <SelectItem key={index} value={role}>{role[0]?.toUpperCase() + role?.slice(1,)}</SelectItem>
+                    })
+                  }
                 </SelectContent>
               </Select>
 
@@ -125,22 +142,24 @@ const PracticePage = () => {
                 onValueChange={setSelectedDifficulty}
                 disabled={loading}
               >
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger>
                   <SelectValue placeholder="All Difficulties" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Difficulties</SelectItem>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                  <SelectItem value="expert">Expert</SelectItem>
+                  {difficultyConfig &&
+                    difficultyConfig?.map((type) => {
+                      return <SelectItem key={type.id} value={type.id}>
+                        {type.emoji}
+                        {type.name}
+                      </SelectItem>
+                    })
+                  }
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
@@ -148,7 +167,6 @@ const PracticePage = () => {
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
           <div className="text-center py-12">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
@@ -164,7 +182,6 @@ const PracticePage = () => {
           </div>
         )}
 
-        {/* Content */}
         {!loading && !error && (
           <>
             <div className="flex justify-between items-center mb-8">
@@ -180,7 +197,7 @@ const PracticePage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {filteredInterviews?.map((practiceInterview) => (
-                <InterviewCard key={practiceInterview?.interview?._id} interview={practiceInterview?.interview} />
+                <InterviewCard key={practiceInterview?.interview?._id} interview={practiceInterview?.interview} isCompleted={practiceInterview?.isCompleted} isStarted={practiceInterview?.isStarted} />
               ))}
             </div>
 

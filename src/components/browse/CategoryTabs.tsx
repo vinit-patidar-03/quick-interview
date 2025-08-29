@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
-import { Blend, Hourglass, Star, TrendingUp, Trophy, UserCheck } from "lucide-react";
+import { Blend, BookmarkCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tabsConfig = [
     { id: "all", name: "All Interviews", emoji: <Blend className="w-4 h-4" /> },
-    { id: "trending", name: "Trending", emoji: <TrendingUp className="w-4 h-4" /> },
-    { id: "recent", name: "Recent", emoji: <Hourglass className="w-4 h-4" /> },
-    { id: "top-rated", name: "Top Rated", emoji: <Star className="w-4 h-4" /> },
-    { id: "most-attempted", name: "Popular", emoji: <UserCheck className="w-4 h-4" /> },
-    { id: "challenging", name: "Expert", emoji: <Trophy className="w-4 h-4" /> },
+    { id: "bookmarked", name: "Bookmarked", emoji: <BookmarkCheck className="w-4 h-4" /> },
+    { id: "expert", name: "Expert", emoji: <div className="w-3 h-3 rounded-full bg-red-500"></div> },
+    { id: "advanced", name: "Advanced", emoji: <div className="w-3 h-3 rounded-full bg-red-300"></div> },
+    { id: "intermidate", name: "Intermidate", emoji: <div className="w-3 h-3 rounded-full bg-orange-500" ></div> },
+    { id: "beginner", name: "Beginner", emoji: <div className="w-3 h-3 rounded-full bg-green-500" ></div> },
 ];
 
 interface CategoryTabsProps {

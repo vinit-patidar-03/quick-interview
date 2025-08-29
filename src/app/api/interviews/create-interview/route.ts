@@ -1,9 +1,9 @@
 import { uploadFile } from "@/lib/cloudinary";
-import INTERVIEW_MODEL from "@/models/interview";
 import { NextRequest, NextResponse } from "next/server";
 import { Buffer } from "buffer";
 import { getUserId } from "@/lib/session";
 import { connectDB } from "@/lib/db";
+import { INTERVIEW_MODEL } from "@/models";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -25,7 +25,7 @@ export const POST = async (req: NextRequest) => {
     const description = formData.get("description") as string;
     const recentlyAdded = formData.get("recentlyAdded") === "true";
     const companyLogo = formData.get("companyLogo") as File;
-
+    
     let companyLogoUrl = "";
 
     await connectDB();
