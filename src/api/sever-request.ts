@@ -6,8 +6,6 @@ export const apiRequestSSR = async (
   method: string,
   cookies: string
 ) => {
-  console.log("INTERVIEW_URL:", process.env.INTERVIEW_URL);
-
   url = `${process.env.INTERVIEW_URL}${url}`
   try {
     const response = await axios({
