@@ -202,7 +202,7 @@ const CategoryCard = ({ category, data }: { category: string; data: CategoryData
 };
 
 const FeedbackPage = async ({ params }: { params: { id: string } }) => {
-    const { id } = await params;
+    const { id } = params;
     const feedbackData = await getInterviewFeedback(id);
 
     if (!feedbackData) {

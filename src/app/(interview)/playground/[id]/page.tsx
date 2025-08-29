@@ -3,12 +3,6 @@ import InterviewAgent from '@/components/playground/InterviewAgent';
 import { getCookies } from '@/lib/session';
 import { getUser } from '@/utils/auth';
 
-interface PageProps {
-    params: {
-        id: string;
-    };
-}
-
 const getInterviewData = async (id: string) => {
     try {
         const cookies = await getCookies();
@@ -20,8 +14,8 @@ const getInterviewData = async (id: string) => {
     }
 }
 
-const InterviewPlayground = async ({ params }: PageProps) => {
-    const { id } = await params;
+const InterviewPlayground = async ({ params }: { params: { id: string } }) => {
+    const { id } = params;
     const user = await getUser();
 
     const InterviewData = await getInterviewData(id);
