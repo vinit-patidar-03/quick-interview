@@ -371,7 +371,7 @@ const UserInfoCard = ({
         <div className='flex gap-2 items-center'>
           <EditUserDialog user={user} onUserUpdate={onUserUpdate} />
           <ButtonWithLoading isLoading={isLoading} size='sm' onClick={handleLogout}>
-            {isLoading ? "Logging out..." : <><span className='md:block hidden'>Log Out</span> <LogOut className='w-4 h-4' /></>}
+            {isLoading ? <span className='md:block hidden'>Logging Out...</span> : <><span className='md:block hidden'>Log Out</span> <LogOut className='w-4 h-4' /></>}
           </ButtonWithLoading>
         </div>
       </div>
