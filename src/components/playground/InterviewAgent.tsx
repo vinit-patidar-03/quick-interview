@@ -480,7 +480,7 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
             }
 
             toggleFullscreen();
-            const interviewer = createInterviewer(formattedTranscript, timeRemaining / 60);
+            const interviewer = createInterviewer(user, formattedTranscript, timeRemaining / 60);
             await vapi.start(interviewer, { variableValues: { questions: formattedQuestions, transcript: formattedTranscript } });
 
         } catch (error) {
@@ -488,7 +488,7 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
             setCallStatus(CallStatus.INACTIVE);
             toast.error(`Failed to start interview: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-    }, [interview?._id, interview.questions, callStatus, messages, toggleFullscreen, timeRemaining]);
+    }, [interview?._id, interview.questions, callStatus, messages, toggleFullscreen, timeRemaining, user]);
 
     const getTimerColor = useCallback(() => {
         const totalDuration = validDuration * 60;

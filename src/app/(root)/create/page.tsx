@@ -324,7 +324,7 @@ const InterviewForm = () => {
 
   return (
     <div>
-      <div className="mx-auto p-4">
+      <div className="md:mx-auto md:p-4">
         {currentStep === 1 ? (
           <Card className="border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader>

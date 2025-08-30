@@ -1,4 +1,4 @@
-import { Interview } from "@/types/types";
+import { Interview, User } from "@/types/types";
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 
 export const roles = [
@@ -92,17 +92,17 @@ export  const getDifficultyColor = (difficulty: Interview["difficulty"]) => {
   };
 
  
-function getTimeBasedGreeting(): string {
+function getTimeBasedGreeting(user:User): string {
   const hour = new Date().getHours();
   
   if (hour >= 5 && hour < 12) {
-    return "Good morning! I'm Sarah, your technical interviewer today.";
+    return `Good morning! ${user?.username}, I'm Sarah, your technical interviewer today.`;
   } else if (hour >= 12 && hour < 17) {
-    return "Good afternoon! I'm Sarah, and I'll be conducting your technical interview today.";
+    return `Good afternoon! ${user?.username}, I'm Sarah, and I'll be conducting your technical interview today.`;
   } else if (hour >= 17 && hour < 22) {
-    return "Good evening! I'm Sarah, your interviewer for today's session.";
+    return `Good evening! ${user?.username}, I'm Sarah, your interviewer for today's session.`;
   } else {
-    return "Hello! I'm Sarah, your technical interviewer.";
+    return `Hello! ${user?.username}, I'm Sarah, your technical interviewer.`;
   }
 }
 
@@ -122,6 +122,7 @@ const calculateTimeDistribution = (totalMinutes: number, hasTranscript: boolean 
 };
 
 export const createInterviewer = (
+  user: User,
   transcript?: string, 
   totalDurationMinutes: number = 30
 ): CreateAssistantDTO => {
@@ -131,8 +132,8 @@ export const createInterviewer = (
   return {
     name: "AI Technical Interviewer",
     firstMessage: transcript 
-      ? `${getTimeBasedGreeting()} Welcome back! Let's continue where we left off.` 
-      : `${getTimeBasedGreeting()} Let's get started with our conversation.`,
+      ? `${getTimeBasedGreeting(user)} Welcome back! Let's continue where we left off. shall we continue?` 
+      : `${getTimeBasedGreeting(user)} Let's get started with our conversation. are you ready?`,
       
     transcriber: {
       provider: "deepgram",
@@ -158,7 +159,7 @@ export const createInterviewer = (
       messages: [
         {
           role: "system",
-          content: `You are Sarah, a senior technical interviewer conducting a professional job interview. 
+          content: `You are Sarah, a senior interviewer conducting a professional job interview. 
 You have years of experience evaluating candidates and creating a comfortable yet thorough interview environment.
 
 ---
