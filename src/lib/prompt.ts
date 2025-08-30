@@ -49,9 +49,10 @@ Company Context: ${description}
 
 ${
   resumeText
-    ? `Candidate Resume Context (use this to personalize questions): ${resumeText}`
+    ? `Candidate Resume Context (use this to personalize questions, but **do not include or mention the candidate's name**. Questions must remain reusable for anyone.) ${resumeText}`
     : "No resume provided. Generate questions using only the role, company, technologies, and description."
 }
+
 
 For each question, provide output in this structure:  
 
@@ -77,7 +78,8 @@ Rules:
 4. Hints should be **progressive nudges**, delivered as short phrases/sentences.  
 5. Ensure the content is **relevant to the role, company context, given technologies, and resume (if provided)**.  
 6. Provide variety (not just definitions — include scenarios, trade-offs, comparisons, real-world cases).  
-7. Adjust the **number and depth** of questions to fit the interview duration.  
-8. Output must be a **valid JSON Array**.
+7. Adjust the **number and depth** of questions to fit the interview duration.
+8. Never include or mention the candidate’s name in any question, follow-up, or hint. Questions must be reusable for any candidate. 
+9. Output must be a **valid JSON Array**.
 `;
 };

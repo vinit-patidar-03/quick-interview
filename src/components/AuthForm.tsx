@@ -80,15 +80,15 @@ const AuthForm = ({ type }: AuthFormProps) => {
         const response = await apiRequest("/api/auth/sign-in", "POST", data);
         if (response.success) {
           setIsLoading(false);
-          toast.success("Sign In successful");
           router.push("/practice");
+          toast.success("Sign In successful");
         }
       } else {
         const response = await apiRequest("/api/auth/sign-up", "POST", data);
         if (response.success) {
           setIsLoading(false);
-          toast.success("Account created successfully! Please sign in.");
           router.push("/sign-in");
+          toast.success("Account created successfully! Please sign in.");
         }
       }
     } catch (error) {

@@ -9,6 +9,7 @@ export type User = {
     username: string;
   email: string;
   profileImage?: string;
+  vapiAPIKey?: string
 }
 
 export type AuthFormType = "sign-in" | "sign-up";

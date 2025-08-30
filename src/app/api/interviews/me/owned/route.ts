@@ -16,7 +16,11 @@ export const GET = async () => {
     }
 
     await connectDB();
+    
  const interviews = await INTERVIEW_MODEL.aggregate([
+  {
+    $match: { userId: new mongoose.Types.ObjectId(userId) }
+  },
   {
     $lookup: {
       from: "userinterviewprogresses",
@@ -75,8 +79,9 @@ export const GET = async () => {
       isFeedback: { $gt: [{ $size: "$feedback" }, 0] },
     },
   },
-  { $project: { progress: 0, feedback: 0 } }, 
+  { $project: { progress: 0, feedback: 0 } },
 ]);
+
 
       
       if (!interviews) {

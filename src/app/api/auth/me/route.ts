@@ -32,6 +32,7 @@ export const PUT = async (req: NextRequest) => {
     const username = formData.get("username") as string;
     const email = formData.get("email") as string;
     const profileLogo = formData.get("profileLogo") as File;
+    const vapiAPIKey = formData.get("vapiAPIKey") as string;
     const userId = await getUserId("access");
       
     if (!userId) {
@@ -57,22 +58,23 @@ export const PUT = async (req: NextRequest) => {
       }
     }
 
-      let avatarUrl = "";
-      
-      if (profileLogo instanceof File) {
+    let avatarUrl = "";
+    if (profileLogo instanceof File) {
       const arrayBuffer = await profileLogo.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       avatarUrl = await uploadFile(buffer, "image", "interview-user-avatar");
-      }
+    }
 
-    const updatedUser = await USER.findByIdAndUpdate(userId,
+    const updatedUser = await USER.findByIdAndUpdate(
+      userId,
       {
         ...(username && { username }),
         ...(email && { email }),
         ...(avatarUrl && { profileImage: avatarUrl }),
+        ...(vapiAPIKey && { vapiAPIKey })
       },
       { new: true }
-    ).select("-password");
+    ).select("-password -vapiAPIKey");
 
     if (!updatedUser) {
       return NextResponse.json(

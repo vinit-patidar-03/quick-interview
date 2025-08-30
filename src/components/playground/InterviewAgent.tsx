@@ -12,6 +12,7 @@ import { createInterviewer } from '@/constants/constants';
 import { apiRequest } from '@/api/client-request';
 import PlaygroundCard from './PlaygroundCard';
 import { useRouter } from 'next/navigation';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 
 enum CallStatus {
     INACTIVE = 'INACTIVE',
@@ -54,8 +55,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const validDuration = interview?.duration || 30;
-
-    // State management
     const [timeRemaining, setTimeRemaining] = useState(() => validDuration * 60);
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [messages, setMessages] = useState<SavedMessages[]>([]);
@@ -67,18 +66,30 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
     const [isListening, setIsListening] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [streamingMessage, setStreamingMessage] = useState<SavedMessages | null>(null);
+    const [open, setOpen] = useState(false);
+    const vapiRef = useRef<ReturnType<typeof vapi> | null>(null);
 
-    // Auto-scroll to bottom when new messages arrive
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, []);
 
     useEffect(() => {
+        if (!user.vapiAPIKey) {
+            setOpen(true);
+        } else if (user.vapiAPIKey && !vapiRef.current) {
+            try {
+                vapiRef.current = vapi(user.vapiAPIKey);
+            } catch (error) {
+                console.error('Failed to initialize Vapi:', error);
+                toast.error('Failed to initialize voice API');
+            }
+        }
+    }, [user.vapiAPIKey])
+
+    useEffect(() => {
         scrollToBottom();
     }, [messages, streamingMessage, scrollToBottom]);
 
-
-    // Prevent back navigation during active interview
     useEffect(() => {
         if (callStatus === CallStatus.ACTIVE) {
             const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -106,7 +117,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         }
     }, [callStatus]);
 
-    // Toggle fullscreen
     const toggleFullscreen = useCallback(() => {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().then(() => {
@@ -121,13 +131,11 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         }
     }, [callStatus]);
 
-    // Listen for fullscreen changes
     useEffect(() => {
         const handleFullscreenChange = () => {
             const isNowFullscreen = !!document.fullscreenElement;
 
             if (!isNowFullscreen) {
-                // User exited fullscreen
                 if (callStatus === CallStatus.ACTIVE || callStatus === CallStatus.CONNECTING) {
                     setShowExitConfirm(true);
                 }
@@ -178,8 +186,9 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
                 toast.success('Interview progress saved! You can resume later.');
 
                 if (callStatus === CallStatus.ACTIVE || callStatus === CallStatus.CONNECTING) {
-                    if (vapi && typeof vapi.stop === 'function') {
-                        await vapi.stop();
+                    const currentVapi = vapiRef.current;
+                    if (currentVapi && typeof currentVapi.stop === 'function') {
+                        await currentVapi.stop();
                     }
                 }
                 router.back();
@@ -193,7 +202,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         }
     }, [saveProgress, callStatus, router]);
 
-    // Handle exit confirmation
     const handleExitConfirm = useCallback(async () => {
         if (callStatus === CallStatus.ACTIVE) {
             await handleSaveAndQuit();
@@ -201,7 +209,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         setShowExitConfirm(false);
     }, [callStatus, handleSaveAndQuit]);
 
-    // Check for existing progress on component mount
     useEffect(() => {
         const checkExistingProgress = async () => {
             if (!interview?._id) return;
@@ -281,8 +288,9 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
     const handleEndCall = useCallback(async () => {
         try {
             if (callStatus === CallStatus.ACTIVE || callStatus === CallStatus.CONNECTING) {
-                if (vapi && typeof vapi.stop === 'function') {
-                    await vapi.stop();
+                const currentVapi = vapiRef.current;
+                if (currentVapi && typeof currentVapi.stop === 'function') {
+                    await currentVapi.stop();
                 }
             }
 
@@ -363,9 +371,10 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         }
     }, []);
 
-    // Vapi integration effect
     useEffect(() => {
-        if (!vapi) {
+        const currentVapi = vapiRef.current;
+
+        if (!currentVapi) {
             console.error('Vapi is not available');
             return;
         }
@@ -418,24 +427,24 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
         };
 
         try {
-            vapi.on("call-start", callStart);
-            vapi.on("call-end", callEnd);
-            vapi.on("message", onMessage);
-            vapi.on("speech-start", onSpeechStart);
-            vapi.on("speech-end", onSpeechEnd);
-            vapi.on("error", onError);
+            currentVapi.on("call-start", callStart);
+            currentVapi.on("call-end", callEnd);
+            currentVapi.on("message", onMessage);
+            currentVapi.on("speech-start", onSpeechStart);
+            currentVapi.on("speech-end", onSpeechEnd);
+            currentVapi.on("error", onError);
         } catch (error) {
             console.error('Error setting up Vapi listeners:', error);
         }
 
         return () => {
             try {
-                vapi.off("call-start", callStart);
-                vapi.off("call-end", callEnd);
-                vapi.off("message", onMessage);
-                vapi.off("speech-start", onSpeechStart);
-                vapi.off("speech-end", onSpeechEnd);
-                vapi.off("error", onError);
+                currentVapi.off("call-start", callStart);
+                currentVapi.off("call-end", callEnd);
+                currentVapi.off("message", onMessage);
+                currentVapi.off("speech-start", onSpeechStart);
+                currentVapi.off("speech-end", onSpeechEnd);
+                currentVapi.off("error", onError);
             } catch (error) {
                 console.error('Error removing Vapi listeners:', error);
             }
@@ -443,12 +452,18 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
     }, [createSafeMessage]);
 
     const handleStartCall = useCallback(async () => {
-        if (!interview?._id) {
-            toast.error('Invalid interview data');
+        if (!interview?._id || !user.vapiAPIKey) {
+            toast.error('Invalid interview data or missing API key');
             return;
         }
 
         if (callStatus !== CallStatus.INACTIVE) return;
+
+        const currentVapi = vapiRef.current;
+        if (!currentVapi) {
+            toast.error('Voice API not initialized');
+            return;
+        }
 
         setCallStatus(CallStatus.CONNECTING);
 
@@ -481,14 +496,24 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
 
             toggleFullscreen();
             const interviewer = createInterviewer(user, formattedTranscript, timeRemaining / 60);
-            await vapi.start(interviewer, { variableValues: { questions: formattedQuestions, transcript: formattedTranscript } });
+
+            if (typeof currentVapi.start === "function") {
+                await currentVapi.start(interviewer, {
+                    variableValues: {
+                        questions: formattedQuestions,
+                        transcript: formattedTranscript
+                    }
+                });
+            } else {
+                throw new Error("Vapi start method is not available.");
+            }
 
         } catch (error) {
             console.error('Failed to start Vapi call:', error);
             setCallStatus(CallStatus.INACTIVE);
             toast.error(`Failed to start interview: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-    }, [interview?._id, interview.questions, callStatus, messages, toggleFullscreen, timeRemaining, user]);
+    }, [interview?._id, interview.questions, callStatus, messages, toggleFullscreen, user, timeRemaining]);
 
     const getTimerColor = useCallback(() => {
         const totalDuration = validDuration * 60;
@@ -556,7 +581,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Header */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="px-6 py-4">
                     <div className="flex flex-col gap-2 md:items-center md:justify-between md:flex-row">
@@ -662,7 +686,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="p-6">
                 {/* Status Alerts */}
                 {callStatus === CallStatus.ERROR && (
@@ -765,7 +788,6 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
                 </div>
             </div>
 
-            {/* Exit Confirmation Modal */}
             {showExitConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <Card className="max-w-md mx-4">
@@ -801,6 +823,33 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
                     </Card>
                 </div>
             )}
+
+            {!user?.vapiAPIKey &&
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogContent
+                        className="sm:max-w-md rounded-2xl border border-gray-200 shadow-lg bg-white/90 backdrop-blur-md"
+                    >
+                        <DialogHeader>
+                            <DialogTitle className="text-lg font-semibold text-gray-900">
+                                🚨 API Key Missing
+                            </DialogTitle>
+                            <DialogDescription className="text-gray-600 text-sm">
+                                You haven&apos;t added your <span className="font-medium">VAPI API key</span> yet.
+                                Please update it from your profile settings to continue.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <DialogFooter className="flex justify-end mt-4">
+                            <Button
+                                variant="prepsmash_button"
+                                onClick={() => router.push("/profile")}
+                            >
+                                Go to Profile
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            }
         </div>
     );
 };

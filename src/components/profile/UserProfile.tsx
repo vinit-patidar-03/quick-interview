@@ -21,7 +21,8 @@ export interface UserData {
   email: string;
   username: string;
   profileImage?: string;
-  profileLogo?: File | null
+  profileLogo?: File | null,
+  vapiAPIKey?: string
 }
 
 interface UserProfileProps {
@@ -72,6 +73,7 @@ const useInterviewActions = () => {
       if (userData.username) formData.append('username', userData.username);
       if (userData.email) formData.append('email', userData.email);
       if (userData.profileLogo) formData.append('profileLogo', userData.profileLogo);
+      if (userData.vapiAPIKey) formData.append('vapiAPIKey', userData.vapiAPIKey);
 
       const response = await apiRequestWithFile(`/api/auth/me`, "PUT", formData);
       if (response?.success) {
@@ -126,11 +128,18 @@ const EditUserDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    username: string;
+    email: string;
+    profileImage: string;
+    profileLogo: File | null;
+    vapiAPIKey: string
+  }>({
     username: user.username,
     email: user.email,
     profileImage: user.profileImage || '',
-    profileLogo: null
+    profileLogo: null,
+    vapiAPIKey: user?.vapiAPIKey as string
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { updateUser } = useInterviewActions();
@@ -150,9 +159,30 @@ const EditUserDialog = ({
       newErrors.email = 'Please enter a valid email';
     }
 
+    if (formData.profileLogo) {
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2 MB
+      if (formData.profileLogo.size > maxSizeInBytes) {
+        newErrors.profileLogo = "File size should not exceed 2MB";
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(formData.profileLogo.type)) {
+        newErrors.profileLogo = "Only JPG, PNG, or WEBP images are allowed";
+      }
+    }
+
+    if (formData.vapiAPIKey) {
+      if (formData.vapiAPIKey.length < 20) {
+        newErrors.vapiAPIKey = "API Key must be at least 20 characters long";
+      } else if (!/^[A-Za-z0-9_\-\.]+$/.test(formData.vapiAPIKey)) {
+        newErrors.vapiAPIKey = "API Key can only contain letters, numbers, dashes, underscores, and dots";
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +212,8 @@ const EditUserDialog = ({
       username: user.username,
       email: user.email,
       profileImage: user.profileImage || '',
-      profileLogo: null
+      profileLogo: null,
+      vapiAPIKey: ''
     });
     setErrors({});
   };
@@ -258,21 +289,39 @@ const EditUserDialog = ({
                   <span className="text-sm text-muted-foreground">Preview</span>
                 </div>
               )}
+              {errors.profileLogo && <p className="text-red-500 text-sm">{errors.profileLogo}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="username">Vapi API Key</Label>
+              <Input
+                id="username"
+                value={formData.vapiAPIKey}
+                onChange={(e) => handleInputChange('vapiAPIKey', e.target.value)}
+                placeholder="Enter your key"
+                className={errors.vapiAPIKey ? 'border-red-500' : ''}
+              />
+              {errors.vapiAPIKey && (
+                <p className="text-sm text-red-500">{errors.vapiAPIKey}</p>
+              )}
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <ButtonWithLoading isLoading={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
-            </ButtonWithLoading>
+            <div className='grid grid-cols-2 gap-2'>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+              <div className='justify-items-center'>
+                <ButtonWithLoading isLoading={isLoading}>
+                  {isLoading ? "Saving..." : "Save Changes"}
+                </ButtonWithLoading>
+              </div>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
