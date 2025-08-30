@@ -1,6 +1,6 @@
 'use client';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { User, Calendar, Clock, Users, Award, Star, ChevronRight, TrashIcon, Edit } from 'lucide-react';
+import { User, Calendar, Clock, Users, Award, Star, ChevronRight, TrashIcon, Edit, LogOut } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { apiRequest, apiRequestWithFile } from '@/api/client-request';
 import { toast } from 'sonner';
 import ButtonWithLoading from '../ButtonWithLoading';
 import { getDifficultyColor } from '@/constants/constants';
+import { useRouter } from 'next/navigation';
 
 export interface UserData {
   _id: string;
@@ -335,9 +336,28 @@ const UserInfoCard = ({
 }: {
   user: UserData;
   onUserUpdate: (updatedUser: UserData) => void;
-}) => (
-  <Card className="mb-6">
-    <CardContent className="pt-6">
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('/api/auth/logout', 'POST');
+      if (response?.success) {
+        toast.success("logged out successfully");
+        router.push('/');
+      }
+    } catch (error) {
+      toast.error('Logout failed');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return <Card className="mb-6">
+    <CardContent>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <UserAvatar user={user} size="large" />
@@ -348,11 +368,16 @@ const UserInfoCard = ({
             </div>
           </div>
         </div>
-        <EditUserDialog user={user} onUserUpdate={onUserUpdate} />
+        <div className='flex gap-2 items-center'>
+          <EditUserDialog user={user} onUserUpdate={onUserUpdate} />
+          <ButtonWithLoading isLoading={isLoading} size='sm' onClick={handleLogout}>
+            {isLoading ? "Logging out..." : <><span className='md:block hidden'>Log Out</span> <LogOut className='w-4 h-4' /></>}
+          </ButtonWithLoading>
+        </div>
       </div>
     </CardContent>
   </Card>
-);
+};
 
 const StatCard = ({
   title,
