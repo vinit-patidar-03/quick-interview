@@ -15,7 +15,6 @@ import { apiRequest, apiRequestWithFile } from '@/api/client-request';
 import { toast } from 'sonner';
 import ButtonWithLoading from '../ButtonWithLoading';
 import { getDifficultyColor } from '@/constants/constants';
-import { useRouter } from 'next/navigation';
 
 export interface UserData {
   _id: string;
@@ -338,7 +337,6 @@ const UserInfoCard = ({
   onUserUpdate: (updatedUser: UserData) => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -346,7 +344,7 @@ const UserInfoCard = ({
       const response = await apiRequest('/api/auth/logout', 'POST');
       if (response?.success) {
         toast.success("logged out successfully");
-        router.push('/');
+        window.location.href = '/'
       }
     } catch (error) {
       toast.error('Logout failed');
