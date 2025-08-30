@@ -7,9 +7,9 @@ const protectedRoutes = ["/practice", "/browse", "/create", "/profile", "/playgr
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("accessToken")?.value;
   const rtoken = request.cookies.get("refreshToken")?.value;
-    const { pathname } = request.nextUrl;
-    
-    console.log("Middleware check:", { pathname, token, rtoken });
+  const { pathname } = request.nextUrl;
+
+  console.log("Middleware check:", { pathname, token, rtoken });
 
   if ((token || rtoken) && urls.includes(pathname)) {
     return NextResponse.redirect(new URL("/practice", request.url));
@@ -17,9 +17,9 @@ export async function middleware(request: NextRequest) {
 
   if (!token && !rtoken && protectedRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
-    }
-    
-    return NextResponse.next();
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
@@ -31,6 +31,7 @@ export const config = {
     "/practice",
     "/profile",
     "/playground/:path*",
-    "/interview/feedback/:path*"
+    "/interview/feedback/:path*",
+    "/"
   ],
 };

@@ -138,24 +138,30 @@ const Navbar = ({ user }: NavbarProps) => {
                   <span className="font-medium">Create Interview</span>
                 </Link>
               </div>
-              <Separator />
-              <div className="space-y-3 border-t border-gray-100 pt-4">
-                <Link
-                  href="/sign-in"
-                  className="flex items-center justify-center w-full px-4 py-2.5 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg font-medium transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
+              {
+                !user &&
+                <>
+                  <Separator />
+                  <div className="space-y-3 border-t border-gray-100 pt-4">
+                    <Link
+                      href="/sign-in"
+                      className="flex items-center justify-center w-full px-4 py-2.5 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg font-medium transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
 
-                <Link
-                  href="/sign-up"
-                  className="flex items-center justify-center w-full px-4 py-2.5 text-white bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </div>
+                    <Link
+                      href="/sign-up"
+                      className="flex items-center justify-center w-full px-4 py-2.5 text-white bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                </>
+              }
+
             </div>
           </div>
         )}
