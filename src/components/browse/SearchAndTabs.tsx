@@ -29,7 +29,7 @@ const SearchAndTabs = ({
     onTabChange,
 }: SearchAndTabsProps) => {
     return (
-        <Card className="h-full w-68 rounded-none border-l-0 border-t-0 border-b-0">
+        <Card className="h-full md:w-68 rounded-none border-l-0 border-t-0 border-b-0">
             <CardHeader>
                 <CardTitle className="text-lg">Search & Filter</CardTitle>
             </CardHeader>

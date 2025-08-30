@@ -7,7 +7,8 @@ export type ChildProp = {
 export type User = {
     _id: string;
     username: string;
-    email: string;
+  email: string;
+  profileImage?: string;
 }
 
 export type AuthFormType = "sign-in" | "sign-up";
@@ -39,7 +40,7 @@ export interface Interview {
   company: string;
   role: string;
   technologies: string[];
-  difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  difficulty: Difficulty;
   duration: number;
   questions: Question[];
   description: string;
@@ -153,28 +154,17 @@ export interface EmptyStateProps {
   icon?: string;
 }
 
+export type Difficulty =  "Beginner" | "Intermediate" | "Advanced" | "Expert";
+
 export interface GenerateQuestionsParams {
   company: string;
   role: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  difficulty: Difficulty;
   technologies: string[];
   duration: number;
   description: string;
+  Resume?:File
 }
-
-// export interface FollowUpQuestion {
-//   question: string;
-//   context: string;
-//   difficulty: "easier" | "harder" | "clarifying";
-// }
-
-
-
-// export interface GenerateContentParams {
-//   model: string;
-//   contents: string;
-// }
-
 export interface GenerateDescriptionParams {
   company: string;
   role: string;

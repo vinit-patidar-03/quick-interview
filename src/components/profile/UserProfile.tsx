@@ -1,6 +1,6 @@
 'use client';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { User, Calendar, Clock, Users, Award, Star, Building2, ChevronRight, TrashIcon, Edit } from 'lucide-react';
+import { User, Calendar, Clock, Users, Award, Star, ChevronRight, TrashIcon, Edit } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { apiRequest, apiRequestWithFile } from '@/api/client-request';
 import { toast } from 'sonner';
 import ButtonWithLoading from '../ButtonWithLoading';
+import { getDifficultyColor } from '@/constants/constants';
 
 export interface UserData {
   _id: string;
@@ -28,15 +29,6 @@ interface UserProfileProps {
   ownedInterviews: Interview[];
   completedInterviews: Interview[];
 }
-
-const getDifficultyVariant = (difficulty: string): "default" | "secondary" | "destructive" | "outline" => {
-  const variants = {
-    'Beginner': 'secondary',
-    'Intermediate': 'default',
-    'Advanced': 'destructive'
-  } as const;
-  return variants[difficulty as keyof typeof variants] || 'outline';
-};
 
 const calculateActivityRate = (ownedCount: number, completedCount: number): number => {
   const totalInterviews = ownedCount + completedCount;
@@ -203,7 +195,7 @@ const EditUserDialog = ({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Edit className="h-4 w-4" />
-          Edit Profile
+          <span className='md:block hidden'>Edit Profile</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -487,12 +479,9 @@ const InterviewCardHeader = ({
   <CardHeader className="pb-4">
     <div className="flex items-start justify-between">
       <div className="flex items-center space-x-3">
-        <Avatar className="h-12 w-12">
-          <AvatarImage src={interview.companyLogo} alt={interview.company} />
-          <AvatarFallback className="bg-gradient-to-br from-muted-foreground to-muted">
-            <Building2 className="h-6 w-6" />
-          </AvatarFallback>
-        </Avatar>
+        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center font-bold text-2xl">
+          {interview?.company[0].toUpperCase()}
+        </div>
         <div>
           <CardTitle className="text-lg">{interview.company}</CardTitle>
           <CardDescription>{interview.role}</CardDescription>
@@ -509,7 +498,7 @@ const InterviewCardHeader = ({
 
 const InterviewMetrics = ({ interview }: { interview: Interview }) => (
   <div className="flex items-center justify-between">
-    <Badge variant={getDifficultyVariant(interview.difficulty)}>
+    <Badge className={`${getDifficultyColor(interview.difficulty)}`} variant="outline">
       {interview.difficulty}
     </Badge>
     <div className="flex items-center space-x-4 text-sm text-muted-foreground">

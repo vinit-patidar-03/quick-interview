@@ -559,12 +559,12 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
             {/* Header */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
+                    <div className="flex flex-col gap-2 md:items-center md:justify-between md:flex-row">
+                        <div className="flex md:items-center md:flex-row flex-col md:space-x-4 space-y-3 md:space-y-0">
                             <Button
                                 onClick={handleBackNavigation}
                                 variant="outline"
-                                className="flex items-center gap-2 px-3 py-2 rounded-lg"
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg w-fit"
                             >
                                 <ArrowLeft className="w-4 h-4" />
                                 <span>Back</span>
@@ -590,67 +590,69 @@ const InterviewPlayground = ({ interview, user }: InterviewPlaygroundProps) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            {hasExistingProgress && callStatus === CallStatus.INACTIVE && (
-                                <Button
-                                    onClick={loadProgress}
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
-                                >
-                                    <RotateCcw size={14} className="mr-1" />
-                                    Resume
-                                </Button>
-                            )}
-
-                            {callStatus === CallStatus.INACTIVE && (
-                                <Button
-                                    onClick={handleStartCall}
-                                    size="sm"
-                                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                                >
-                                    <PhoneCall size={14} className="mr-1" />
-                                    Start Interview
-                                </Button>
-                            )}
-
-                            {callStatus === CallStatus.CONNECTING && (
-                                <Button disabled size="sm">
-                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2" />
-                                    Connecting...
-                                </Button>
-                            )}
-
-                            {callStatus === CallStatus.ACTIVE && (
-                                <>
+                        <div className="flex items-center md:justify-start justify-between space-x-4">
+                            <div className='flex gap-2 flex-wrap'>
+                                {hasExistingProgress && callStatus === CallStatus.INACTIVE && (
                                     <Button
-                                        variant={isMuted ? "destructive" : "outline"}
-                                        onClick={toggleMute}
-                                        size="sm"
-                                    >
-                                        {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                                    </Button>
-
-                                    <Button
+                                        onClick={loadProgress}
                                         variant="outline"
-                                        onClick={handleSaveAndQuit}
                                         size="sm"
-                                        className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                        className="border-purple-300 text-purple-700 hover:bg-purple-50"
                                     >
-                                        <Save size={14} className="mr-1" />
-                                        Save & Quit
+                                        <RotateCcw size={14} className="mr-1" />
+                                        Resume
                                     </Button>
+                                )}
 
+                                {callStatus === CallStatus.INACTIVE && (
                                     <Button
-                                        variant="destructive"
-                                        onClick={handleEndCall}
+                                        onClick={handleStartCall}
                                         size="sm"
+                                        className="bg-purple-600 hover:bg-purple-700 text-white"
                                     >
-                                        <PhoneOff size={14} className="mr-1" />
-                                        End
+                                        <PhoneCall size={14} className="mr-1" />
+                                        Start Interview
                                     </Button>
-                                </>
-                            )}
+                                )}
+
+                                {callStatus === CallStatus.CONNECTING && (
+                                    <Button disabled size="sm">
+                                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2" />
+                                        Connecting...
+                                    </Button>
+                                )}
+
+                                {callStatus === CallStatus.ACTIVE && (
+                                    <>
+                                        <Button
+                                            variant={isMuted ? "destructive" : "outline"}
+                                            onClick={toggleMute}
+                                            size="sm"
+                                        >
+                                            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                                        </Button>
+
+                                        <Button
+                                            variant="outline"
+                                            onClick={handleSaveAndQuit}
+                                            size="sm"
+                                            className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                        >
+                                            <Save size={14} className="mr-1" />
+                                            Save & Quit
+                                        </Button>
+
+                                        <Button
+                                            variant="destructive"
+                                            onClick={handleEndCall}
+                                            size="sm"
+                                        >
+                                            <PhoneOff size={14} className="mr-1" />
+                                            End
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
                             <div className={`text-lg font-mono font-bold ${getTimerColor()} flex items-center`}>
                                 <Clock size={14} className="mr-2" />
                                 {formatTime(timeRemaining)}

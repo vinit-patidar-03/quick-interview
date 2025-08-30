@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 
 const urls = ["/", "/sign-in", "/sign-up"];
 
-const protectedRoutes = ["/practice", "/browse", "/create", "/profile", "/playground/:path*"];
+const protectedRoutes = ["/practice", "/browse", "/create", "/profile", "/playground/:path*", "/interview/feedback/:path*"];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("accessToken")?.value;
@@ -31,8 +31,6 @@ export const config = {
     "/practice",
     "/profile",
     "/playground/:path*",
-    "/",
-    "/sign-in",
-    "/sign-up",
+    "/interview/feedback/:path*"
   ],
 };

@@ -1,3 +1,4 @@
+import { Interview } from "@/types/types";
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 
 export const roles = [
@@ -74,6 +75,21 @@ export const roles = [
   "Consultant",
   "Freelancer",
 ];
+
+export  const getDifficultyColor = (difficulty: Interview["difficulty"]) => {
+    switch (difficulty) {
+      case "Beginner":
+        return "text-green-500";
+      case "Intermediate":
+        return "text-orange-500";
+      case "Advanced":
+        return "text-red-300";
+      case "Expert":
+        return "text-red-500";
+      default:
+        return "bg-gray-100 text-gray-800 hover:bg-gray-200";
+    }
+  };
 
  
 function getTimeBasedGreeting(): string {

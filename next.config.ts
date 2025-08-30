@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
         pathname: "/hacker03/**"
       }
     ]
-  }
+  },
+   serverExternalPackages: ["pdf-parse", "mammoth"],
 };
 
 export default nextConfig;

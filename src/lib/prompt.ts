@@ -1,15 +1,40 @@
 import { GenerateQuestionsParams } from "../types/types";
 
-export const generateQuestionsPrompt = (params: GenerateQuestionsParams) => {
-  const { company, role, difficulty, technologies, duration, description } = params;
+export const generateQuestionsPrompt = async (params: GenerateQuestionsParams) => {
+  const { company, role, difficulty, technologies, duration, description, Resume } = params;
+
+  let resumeText = "";
+
+  if (Resume instanceof File) {
+    const buffer = await Resume.arrayBuffer();
+    const uint8 = new Uint8Array(buffer);
+
+    const fileName = Resume.name.toLowerCase();
+
+    if (fileName.endsWith(".pdf")) {
+      const pdfParse  = (await import("pdf-parse")).default;
+      const bufferData = Buffer.from(uint8);
+      const pdfData = await pdfParse(bufferData);
+      resumeText = pdfData.text;
+    } else if (fileName.endsWith(".docx")) {
+      const mammoth = await import("mammoth");
+      const bufferData = Buffer.from(uint8);
+      const docData = await mammoth.extractRawText({ buffer: bufferData });
+      resumeText = docData.value;
+    } else if (fileName.endsWith(".txt")) {
+      resumeText = new TextDecoder("utf-8").decode(uint8);
+    }
+
+    resumeText = resumeText.trim().slice(0, 8000);
+  }
+
   return `
 You are an expert technical interviewer.  
 
-Your task is to generate a **set of structured interview questions** that are:  
-- Vocally explainable (no code editor, no implementation-heavy problems).  
-- Conceptual (theory, principles, trade-offs) **and** Scenario-based (real-world cases, applied reasoning).  
-- Mixed question set: include **both conceptual and scenario questions** in roughly equal proportion.  
-- Aligned with the given role, company, and required technologies.  
+Your task is to generate a **set of short, conversational interview questions** that are:  
+- Designed for a **vocal interview** (so each question should be brief and easy to say aloud).  
+- **One clear idea per question**. Avoid long, multi-part prompts.  
+- Questions should be a mix of **conceptual (theory, principles, trade-offs)** and **scenario-based (real-world, applied reasoning)**.  
 - Difficulty should match the requested level ('easy', 'medium', 'hard').  
 - The number of questions should be adjusted to fit within the interview duration (${duration} minutes).  
 - Use the company context to make questions more relevant.  
@@ -22,48 +47,37 @@ Difficulty: ${difficulty}
 Duration: ${duration} minutes  
 Company Context: ${description}  
 
+${
+  resumeText
+    ? `Candidate Resume Context (use this to personalize questions): ${resumeText}`
+    : "No resume provided. Generate questions using only the role, company, technologies, and description."
+}
+
 For each question, provide output in this structure:  
 
 {
-  "question": "string",
+  "question": "string (short and easy to ask aloud)",
   "type": "conceptual | scenario",
   "followups": [
-    "string (basic follow-up, easiest)",
-    "string (intermediate follow-up, probes deeper)",
-    "string (advanced follow-up, most challenging)"
+    "string (slightly deeper probe, still short)",
+    "string (goes further, adds complexity)",
+    "string (advanced, challenging but still vocal-friendly)"
   ],
   "hints": [
-    "string (smallest nudge, very high-level)",
-    "string (medium nudge, guiding reasoning)",
-    "string (detailed nudge, close to the answer)"
+    "string (tiny clue, one phrase)",
+    "string (medium clue, one sentence)",
+    "string (clearer hint, short but close to the answer)"
   ]
 }
 
 Rules:  
-1. Include a **balanced mix** of conceptual and scenario questions.  
-2. Follow-up questions must be in **increasing order of depth** (basic → advanced).  
-3. Hints must be in **increasing order of detail** (tiny clue → partial reasoning → near answer).  
-4. Avoid coding/implementation problems; keep everything **vocally explainable**.  
-5. Ensure the content is **relevant to the role, company context, and given technologies**.  
+1. Keep **all questions short, clear, and vocal-friendly**.  
+2. One idea per question (avoid chaining multiple questions together).  
+3. Follow-ups should feel like a **natural conversation**, each one probing deeper.  
+4. Hints should be **progressive nudges**, delivered as short phrases/sentences.  
+5. Ensure the content is **relevant to the role, company context, given technologies, and resume (if provided)**.  
 6. Provide variety (not just definitions — include scenarios, trade-offs, comparisons, real-world cases).  
-7. Adjust the **number and depth** of questions to fit the interview duration.
-8. Output must be **valid JSON Array**
-e.g.:
-[
-  {
-    "question": "string",
-    "type": "conceptual | scenario",
-    "followups": [
-      "string (basic follow-up, easiest)",
-      "string (intermediate follow-up, probes deeper)",
-      "string (advanced follow-up, most challenging)"
-    ],
-    "hints": [
-      "string (smallest nudge, very high-level)",
-      "string (medium nudge, guiding reasoning)",
-      "string (detailed nudge, close to the answer)"
-    ]
-  }
-]
-`;  
-}
+7. Adjust the **number and depth** of questions to fit the interview duration.  
+8. Output must be a **valid JSON Array**.
+`;
+};

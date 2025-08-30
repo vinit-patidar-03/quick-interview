@@ -40,10 +40,6 @@ const interviewSchema = new mongoose.Schema<Interview>({
     description: {
         type: String,
         required: true,
-    },
-    companyLogo: {
-        type: String,
-        required: false,
     }
 }, {
     timestamps: true,

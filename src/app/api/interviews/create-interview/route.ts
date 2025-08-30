@@ -1,6 +1,4 @@
-import { uploadFile } from "@/lib/cloudinary";
 import { NextRequest, NextResponse } from "next/server";
-import { Buffer } from "buffer";
 import { getUserId } from "@/lib/session";
 import { connectDB } from "@/lib/db";
 import { INTERVIEW_MODEL } from "@/models";
@@ -23,17 +21,11 @@ export const POST = async (req: NextRequest) => {
     const duration = Number(formData.get("duration"));
     const questions = JSON.parse(formData.get("questions") as string);
     const description = formData.get("description") as string;
-    const recentlyAdded = formData.get("recentlyAdded") === "true";
-    const companyLogo = formData.get("companyLogo") as File;
-    
-    let companyLogoUrl = "";
 
     await connectDB();
 
-    if (companyLogo instanceof File) {
-      const arrayBuffer = await companyLogo.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      companyLogoUrl = await uploadFile(buffer, "image", "interview-company-logos");
+    if (!company || !role || !technologies || !difficulty || !duration || !questions || !description) {
+      return NextResponse.json({ success: false, message: "Missing required field" });
     }
 
     const interview = await INTERVIEW_MODEL.create({
@@ -44,8 +36,6 @@ export const POST = async (req: NextRequest) => {
       duration,
       questions,
       description,
-      companyLogo: companyLogoUrl,
-      recentlyAdded,
       userId: userId,
     });
 

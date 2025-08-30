@@ -25,7 +25,7 @@ const CategoryTabs = ({ activeTab, onTabChange }: CategoryTabsProps) => {
                 {tabsConfig.map((tab) => (
                     <Button
                         key={tab.id}
-                        variant={activeTab === tab.id ? "prepsmash_button" : "ghost"}
+                        variant={activeTab === tab.id ? "prepsmash_button" : "outline"}
                         onClick={() => onTabChange(tab.id)}
                         className="w-full justify-start text-sm flex-1/3"
                     >

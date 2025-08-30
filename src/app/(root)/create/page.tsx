@@ -32,10 +32,10 @@ import {
   MessageSquare,
   TrendingUp,
   Trash2,
-  ImageIcon,
   ArrowRight,
   ArrowLeft,
   Settings,
+  File,
 } from "lucide-react";
 import AiGenerateButton from "@/components/AiGenerateButton";
 import SkillsBadge from "@/components/SkillsBadge";
@@ -44,6 +44,7 @@ import ButtonWithIcon from "@/components/ButtonWithIcon";
 import { apiRequest, apiRequestWithFile } from "@/api/client-request";
 import { toast } from "sonner";
 import { roles } from "@/constants/constants";
+import { useRouter } from "next/navigation";
 
 interface Question {
   question: string;
@@ -57,7 +58,7 @@ interface FormData {
   difficulty: string;
   duration: string;
   description: string;
-  companyLogo: File | null;
+  Resume: File | null;
   questions: Question[];
 }
 
@@ -68,7 +69,7 @@ const INITIAL_FORM_DATA: FormData = {
   difficulty: "",
   duration: "",
   description: "",
-  companyLogo: null,
+  Resume: null,
   questions: [],
 };
 
@@ -113,6 +114,7 @@ const InterviewForm = () => {
   >(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const router = useRouter();
 
   const handleInputChange = <K extends keyof FormData>(
     field: K,
@@ -226,18 +228,22 @@ const InterviewForm = () => {
       return;
     }
 
+    const form = new FormData();
+    form.append("company", formData.company);
+    form.append("role", formData.role);
+    form.append("technologies", JSON.stringify(formData.technologies));
+    form.append("difficulty", formData.difficulty);
+    form.append("duration", formData.duration);
+    form.append("description", formData.description);
+    if (formData.Resume) {
+      form.append("Resume", formData.Resume);
+    }
+
     try {
-      const response = await apiRequest(
+      const response = await apiRequestWithFile(
         "/api/interviews/generate-questions",
         "POST",
-        {
-          company: formData.company,
-          role: formData.role,
-          difficulty: formData.difficulty,
-          technologies: formData.technologies,
-          duration: formData.duration,
-          description: formData.description,
-        },
+        form
       );
 
       if (response.success) {
@@ -289,8 +295,8 @@ const InterviewForm = () => {
     form.append("duration", formData.duration);
     form.append("description", formData.description);
     form.append("questions", JSON.stringify(formData.questions));
-    if (formData.companyLogo) {
-      form.append("companyLogo", formData.companyLogo!);
+    if (formData.Resume) {
+      form.append("companyLogo", formData.Resume!);
     }
     try {
       const response = await apiRequestWithFile(
@@ -303,6 +309,7 @@ const InterviewForm = () => {
         toast.success("Interview created successfully!");
         setFormData(INITIAL_FORM_DATA);
         setCurrentStep(1);
+        router.push('/browse')
       } else {
         toast.error("Failed to create interview");
       }
@@ -452,8 +459,8 @@ const InterviewForm = () => {
                     htmlFor="companyLogo"
                     className="text-sm font-medium text-gray-700 flex items-center gap-2"
                   >
-                    <ImageIcon className="w-4 h-4" />
-                    Company Logo
+                    <File className="w-4 h-4" />
+                    Resume (Optional)
                   </Label>
                   <Input
                     id="companyLogo"
@@ -461,7 +468,7 @@ const InterviewForm = () => {
                     placeholder="Upload company logo"
                     onChange={(e) =>
                       handleInputChange(
-                        "companyLogo",
+                        "Resume",
                         e.target.files?.[0] || null
                       )
                     }
@@ -479,7 +486,7 @@ const InterviewForm = () => {
                   <Input
                     id="duration"
                     type="number"
-                    placeholder="60"
+                    placeholder="5"
                     value={formData.duration}
                     onChange={(e) =>
                       handleInputChange("duration", e.target.value)

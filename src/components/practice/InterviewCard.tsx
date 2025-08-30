@@ -9,24 +9,11 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Interview, InterviewCardPracticeProps } from "@/types/types";
+import { InterviewCardPracticeProps } from "@/types/types";
 import Link from "next/link";
+import { getDifficultyColor } from "@/constants/constants";
 
 const InterviewCard = ({ interview, isCompleted, isStarted }: InterviewCardPracticeProps) => {
-  const getDifficultyVariant = (difficulty: Interview["difficulty"]) => {
-    switch (difficulty?.toLowerCase()) {
-      case "beginner":
-        return "secondary";
-      case "intermediate":
-        return "outline";
-      case "advanced":
-        return "default";
-      case "expert":
-        return "destructive";
-      default:
-        return "secondary";
-    }
-  };
   return (
     <>
       <Card
@@ -55,7 +42,7 @@ const InterviewCard = ({ interview, isCompleted, isStarted }: InterviewCardPract
           </div>
 
           <div className="mt-3">
-            <Badge variant={getDifficultyVariant(interview.difficulty)}>
+            <Badge variant="outline" className={getDifficultyColor(interview?.difficulty)}>
               {interview.difficulty}
             </Badge>
           </div>

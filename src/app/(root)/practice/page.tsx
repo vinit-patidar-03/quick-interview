@@ -107,7 +107,7 @@ const PracticePage = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 type="text"
-                placeholder="Search interviews, companies, or technologies..."
+                placeholder="Search interviews"
                 className="pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -115,7 +115,7 @@ const PracticePage = () => {
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <Select
                 value={selectedJobType}
                 onValueChange={setSelectedJobType}

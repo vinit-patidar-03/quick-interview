@@ -1,4 +1,4 @@
-import { Interview, InterviewCardBrowseProps } from "@/types/types";
+import { InterviewCardBrowseProps } from "@/types/types";
 import {
   Card,
   CardHeader,
@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookmarkCheck, BookmarkPlus, Building2, Clock } from "lucide-react";
-import Image from "next/image";
+import { BookmarkCheck, BookmarkPlus, Clock } from "lucide-react";
 import { useState } from "react";
+import { getDifficultyColor } from "@/constants/constants";
 
 const InterViewBrowseCard = ({
   interview,
@@ -19,19 +19,6 @@ const InterViewBrowseCard = ({
   onBookmarkToggle
 }: InterviewCardBrowseProps) => {
   const [isBookmarkedState, setIsBookmarkedState] = useState(isBookmarked);
-
-  const getDifficultyColor = (difficulty: Interview["difficulty"]) => {
-    switch (difficulty) {
-      case "Beginner":
-        return "bg-green-100 text-green-800 hover:bg-green-200";
-      case "Intermediate":
-        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
-      case "Expert":
-        return "bg-red-100 text-red-800 hover:bg-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-200";
-    }
-  };
 
   const handleBookmarkClick = (id: string) => {
     setIsBookmarkedState(!isBookmarkedState);
@@ -43,18 +30,8 @@ const InterViewBrowseCard = ({
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-              {interview.companyLogo ? (
-                <Image
-                  src={interview.companyLogo}
-                  alt={`${interview.company} Logo`}
-                  width={48}
-                  height={48}
-                  className="object-cover rounded-lg"
-                />
-              ) : (
-                <Building2 className="w-6 h-6 text-muted-foreground" />
-              )}
+            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center font-bold text-2xl">
+              {interview?.company[0].toUpperCase()}
             </div>
             <div>
               <CardTitle className="text-lg">{interview?.company}</CardTitle>
@@ -94,7 +71,7 @@ const InterViewBrowseCard = ({
             <Clock className="w-4 h-4" />
             {interview?.duration} mins
           </div>
-          <Badge className={getDifficultyColor(interview?.difficulty)}>
+          <Badge className={getDifficultyColor(interview?.difficulty)} variant="outline">
             {interview?.difficulty}
           </Badge>
         </div>

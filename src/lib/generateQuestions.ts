@@ -4,13 +4,13 @@ import { GenerateQuestionsParams, Question } from "../types/types";
 import { cleanJsonResponse } from "@/utils/clean-response";
 
 export const generateQuestions = async (params: GenerateQuestionsParams): Promise<Question[]> => {
-  const { company, role, difficulty, technologies, duration, description } = params;
+  const { company, role, difficulty, technologies, duration, description} = params;
 
   if (!company || !role || !difficulty || !technologies.length || !duration || !description) {
     throw new Error("Missing required parameters for question generation");
   }
  
-  const prompt = generateQuestionsPrompt(params);
+  const prompt = await generateQuestionsPrompt(params);
 
   try {
     const response = await generateContent(prompt); 
